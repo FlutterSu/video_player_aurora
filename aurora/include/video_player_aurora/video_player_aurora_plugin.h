@@ -30,38 +30,27 @@ private:
   };
 
   void HandleInitializeMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleCreateMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleDisposeMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandlePauseMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandlePlayMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleSetLoopingMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleSetVolumeMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleSetMixWithOthersMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleSetPlaybackSpeedMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandleSeekToMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
   void HandlePositionMethodCall(
-      const Encodable& message,
-      MessageReply reply);
+      const BasicMessage& message);
 
   void SendInitializedEventMessage(int64_t texture_id);
   void SendPlayCompletedEventMessage(int64_t texture_id);

@@ -7,6 +7,6 @@ Exec=/usr/bin/com.alexsherkan.example
 X-Nemo-Application-Type=silica-qt5
 
 [X-Application]
-Permissions=Audio;Internet;
+Permissions=UserDirs;Audio;Internet;RemovableMedia;Videos
 OrganizationName=com.alexsherkan
 ApplicationName=example

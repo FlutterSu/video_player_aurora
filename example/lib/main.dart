@@ -59,10 +59,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-      'https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm',
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
+    // _controller = VideoPlayerController.network(
+    //   'https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm',
+    //   videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    // );
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm'))
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
 
     _controller.addListener(() {
       setState(() {});

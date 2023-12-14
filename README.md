@@ -24,7 +24,7 @@ dependencies:
   video_player: ^2.6.1
   video_player_aurora:
     git:
-      url: https://github.com/sony/flutter-elinux-plugins.git
+      url: https://gitlab.com/alexsherkhan/video_player_aurora
       path: ./
       ref: main
 ```

@@ -1,0 +1,21 @@
+name: video_player_aurora
+description: Flutter plugin for displaying inline video with other Flutter widgets on Aurora OS.
+version: 0.0.1
+homepage: https://gitlab.com/alexsherkhan/video_player_aurora
+repository: https://gitlab.com/alexsherkhan/video_player_aurora
+
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+  flutter: ">=3.7.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player_platform_interface: ^6.2.1
+
+flutter:
+  plugin:
+    platforms:
+      elinux:
+        pluginClass: VideoPlayerAuroraPlugin
+        dartPluginClass: AuroraVideoPlayer

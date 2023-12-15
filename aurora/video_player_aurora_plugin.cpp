@@ -51,14 +51,12 @@ constexpr char kEncodableMapkeyResult[] = "result";
 constexpr char kEncodableMapkeyError[] = "error";
 
 
-VideoPlayerAuroraPlugin::VideoPlayerAuroraPlugin(PluginRegistrar* plugin_registrar,
-                    TextureRegistrar* texture_registrar)
-      : plugin_registrar_(plugin_registrar),
-        texture_registrar_(texture_registrar) {
-    // Needs to call 'gst_init' that initializing the GStreamer library before
-    // using it.
-    GstVideoPlayer::GstLibraryLoad();
-  }
+VideoPlayerAuroraPlugin::VideoPlayerAuroraPlugin()
+{        
+  // Needs to call 'gst_init' that initializing the GStreamer library before
+  // using it.
+  GstVideoPlayer::GstLibraryLoad();
+}
 
 VideoPlayerAuroraPlugin::~VideoPlayerAuroraPlugin() {
     for (auto itr = players_.begin(); itr != players_.end(); itr++) {
@@ -70,7 +68,7 @@ VideoPlayerAuroraPlugin::~VideoPlayerAuroraPlugin() {
       // }
       player->player = nullptr;
       player->buffer = nullptr;
-      player->texture = nullptr;
+      // player->texture = nullptr;
       texture_registrar_->UnregisterTexture(texture_id);
     }
     players_.clear();
@@ -80,13 +78,15 @@ VideoPlayerAuroraPlugin::~VideoPlayerAuroraPlugin() {
 
 void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
     PluginRegistrar& registrar) {
-  auto plugin = std::make_unique<VideoPlayerAuroraPlugin>(
-      registrar, registrar.GetTextureRegistrar());
+      
+    auto plugin = std::make_unique<VideoPlayerAuroraPlugin>();
+    plugin.get()->plugin_registrar_ = &(registrar);
+    plugin.get()->texture_registrar_ = registrar.GetTextureRegistrar();
   {
     auto channel = BasicMessageChannel(kVideoPlayerApiChannelInitializeName,
     MessageCodecType::Standard);
 
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelInitializeName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelInitializeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleInitializeMethodCall(message);});
@@ -102,7 +102,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelCreateName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelCreateName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleCreateMethodCall(message);});
@@ -118,7 +118,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelDisposeName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelDisposeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleDisposeMethodCall(message);});
@@ -134,7 +134,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelPauseName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPauseName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePauseMethodCall(message);});
@@ -150,7 +150,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelPlayName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPlayName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePlayMethodCall(message);});
@@ -166,7 +166,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelSetLoopingName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetLoopingName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetLoopingMethodCall(message);});
@@ -182,7 +182,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelSetVolumeName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetVolumeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetVolumeMethodCall(message);});
@@ -198,7 +198,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelSetMixWithOthersName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetMixWithOthersName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetMixWithOthersMethodCall(message);});
@@ -214,7 +214,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelSetPlaybackSpeedName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetPlaybackSpeedName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetPlaybackSpeedMethodCall(message);});
@@ -230,7 +230,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelSeekToName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSeekToName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSeekToMethodCall(message);});
@@ -246,7 +246,7 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   {
-    registrar.RegisterBasicMessageChannel(kVideoPlayerApiChannelPositionName,
+    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPositionName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePositionMethodCall(message);});
@@ -262,12 +262,6 @@ void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
   }
 
   //registrar->AddPlugin(std::move(plugin));
-}
-
-void VideoPlayerAuroraPlugin::HandleMethodCall(const MethodCall& method_call) {
-}
-void VideoPlayerAuroraPlugin::OnMethodCall(const MethodCall& call) {
-  HandleMethodCall(call);
 }
 
 void VideoPlayerAuroraPlugin::unimplemented(const MethodCall& call) {
@@ -288,7 +282,7 @@ void VideoPlayerAuroraPlugin::HandleInitializeMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
     const BasicMessage& message) {
-  auto meta = CreateMessage::FromMap(message);
+  auto meta = CreateMessage::FromMap(message.GetValue());
   std::string uri;
   if (!meta.GetAsset().empty()) {
     // todo: gets propery path of the Flutter project.
@@ -314,19 +308,10 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
           }));
 #else
   instance->buffer = std::make_unique<FlutterPixelBuffer>();
-  instance->texture =
-      std::make_unique<BufferVariant>(
-          [instance = instance.get()](
-              size_t width, size_t height) -> const FlutterPixelBuffer* {
-            instance->buffer->width = instance->player->GetWidth();
-            instance->buffer->height = instance->player->GetHeight();
-
-            instance->buffer->buffer = std::make_shared<uint8_t>(instance->player->GetFrameBuffer());
-            
-            // instance->buffer->buffer = instance->player->GetFrameBuffer();
-            return instance->buffer.get();
-          });
-
+  instance->buffer->width = instance->player->GetWidth();
+  instance->buffer->height = instance->player->GetHeight();
+  instance->buffer->buffer = std::make_shared<uint8_t>(instance->player->GetFrameBuffer());
+  
 #endif  // USE_EGL_IMAGE_DMABUF
   // const auto texture_id =
   //     texture_registrar_->RegisterTexture(instance->texture.get());
@@ -335,11 +320,11 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
       texture_registrar_->RegisterTexture(
         [this,instance = instance.get()](size_t, size_t) -> std::optional<BufferVariant> {
             
-            auto pixel_buffer = std::get<FlutterPixelBuffer>(*(instance->texture));
+            auto pixel_buffer = instance->buffer.get();
 
-            if (pixel_buffer.buffer && pixel_buffer.width != 0 && pixel_buffer.height != 0) {
+            if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
                 return std::make_optional(BufferVariant(
-                    FlutterPixelBuffer{pixel_buffer.buffer, (size_t) pixel_buffer.width, (size_t) pixel_buffer.height}));
+                    FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
             }
             return std::nullopt;
         });
@@ -422,7 +407,7 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
     const BasicMessage& message) {
-  auto parameter = TextureMessage::FromMap(message);
+  auto parameter = TextureMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -432,7 +417,7 @@ void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
     // player->event_channel->SetStreamHandler(nullptr);
     player->player = nullptr;
     player->buffer = nullptr;
-    player->texture = nullptr;
+    // player->texture = nullptr;
     players_.erase(texture_id);
     texture_registrar_->UnregisterTexture(texture_id);
 
@@ -451,7 +436,7 @@ void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
 
 void VideoPlayerAuroraPlugin::HandlePauseMethodCall(
     const BasicMessage& message) {
-  auto parameter = TextureMessage::FromMap(message);
+  auto parameter = TextureMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -473,7 +458,7 @@ void VideoPlayerAuroraPlugin::HandlePauseMethodCall(
 
 void VideoPlayerAuroraPlugin::HandlePlayMethodCall(
     const BasicMessage& message) {
-  auto parameter = TextureMessage::FromMap(message);
+  auto parameter = TextureMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -495,7 +480,7 @@ void VideoPlayerAuroraPlugin::HandlePlayMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleSetLoopingMethodCall(
     const BasicMessage& message) {
-  auto parameter = LoopingMessage::FromMap(message);
+  auto parameter = LoopingMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -517,7 +502,7 @@ void VideoPlayerAuroraPlugin::HandleSetLoopingMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleSetVolumeMethodCall(
     const BasicMessage& message) {
-  auto parameter = VolumeMessage::FromMap(message);
+  auto parameter = VolumeMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -552,7 +537,7 @@ void VideoPlayerAuroraPlugin::HandleSetMixWithOthersMethodCall(
 
 void VideoPlayerAuroraPlugin::HandlePositionMethodCall(
     const BasicMessage& message) {
-  auto parameter = TextureMessage::FromMap(message);
+  auto parameter = TextureMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -583,7 +568,7 @@ void VideoPlayerAuroraPlugin::HandlePositionMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleSetPlaybackSpeedMethodCall(
     const BasicMessage& message) {
-  auto parameter = PlaybackSpeedMessage::FromMap(message);
+  auto parameter = PlaybackSpeedMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 
@@ -604,7 +589,7 @@ void VideoPlayerAuroraPlugin::HandleSetPlaybackSpeedMethodCall(
 
 void VideoPlayerAuroraPlugin::HandleSeekToMethodCall(
     const BasicMessage& message) {
-  auto parameter = PositionMessage::FromMap(message);
+  auto parameter = PositionMessage::FromMap(message.GetValue());
   const auto texture_id = parameter.GetTextureId();
   Encodable::Map result;
 

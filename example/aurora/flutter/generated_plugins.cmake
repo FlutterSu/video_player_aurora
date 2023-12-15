@@ -7,6 +7,7 @@ function(add_library TARGET)
     _add_library(${TARGET} ${ARGN})
 
     if (
+      "${TARGET}" MATCHES "^video_player_aurora_platform_plugin$" OR
       FALSE
     )
       add_custom_command(TARGET ${TARGET} POST_BUILD
@@ -17,6 +18,7 @@ function(add_library TARGET)
 endfunction()
 
 list(APPEND FLUTTER_PLATFORM_PLUGIN_LIST
+    video_player_aurora
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

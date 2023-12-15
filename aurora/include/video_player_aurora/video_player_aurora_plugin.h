@@ -7,19 +7,20 @@
 #include <flutter/event-channel.h>
 #include <flutter/texture-variant.h>
 
+#include <../gst_video_player.h>
+
 class PLUGIN_EXPORT VideoPlayerAuroraPlugin final : public PluginInterface {
  public:
   void RegisterWithRegistrar(PluginRegistrar& registrar) override;
   
-  VideoPlayerAuroraPlugin(PluginRegistrar* plugin_registrar,
-                    TextureRegistrar* texture_registrar);
+  VideoPlayerAuroraPlugin();
   virtual ~VideoPlayerAuroraPlugin();
 
 private:
  struct FlutterVideoPlayer {
     int64_t texture_id;
     std::unique_ptr<GstVideoPlayer> player;
-    std::unique_ptr<BufferVariant> texture;
+    // std::unique_ptr<BufferVariant> texture;
     std::unique_ptr<FlutterPixelBuffer> buffer;
 #ifdef USE_EGL_IMAGE_DMABUF
     std::unique_ptr<FlutterDesktopEGLImage> egl_image;
@@ -61,10 +62,6 @@ private:
                       const std::string& details = std::string());
 
   const std::string GetExecutableDirectory();
-
-  void HandleMethodCall(const MethodCall& method_call);
-
-  void OnMethodCall(const MethodCall& call);
   void unimplemented(const MethodCall& call);
 
   PluginRegistrar* plugin_registrar_;
@@ -72,4 +69,4 @@ private:
   std::unordered_map<int64_t, std::unique_ptr<FlutterVideoPlayer>> players_;
 };
 
-#endif FLUTTER_PLUGIN_VIDEO_PLAYER_AURORA_PLUGIN_H_
+#endif //FLUTTER_PLUGIN_VIDEO_PLAYER_AURORA_PLUGIN_H_

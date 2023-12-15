@@ -40,16 +40,14 @@ class PositionMessage {
 
       Encodable& texture_id =
           map[Encodable::String("textureId")];
-      if (std::holds_alternative<int32_t>(texture_id) ||
-          std::holds_alternative<int64_t>(texture_id)) {
-        message.SetTextureId(texture_id.GetInt());
+      if (std::holds_alternative<int64_t>(texture_id)) {
+        message.SetTextureId(std::get<int64_t>(texture_id));
       }
 
       Encodable& position =
           map[Encodable::String("position")];
-      if (std::holds_alternative<int32_t>(position) ||
-          std::holds_alternative<int64_t>(position)) {
-        message.SetPosition(position.GetInt());
+      if (std::holds_alternative<int64_t>(position)) {
+        message.SetPosition(std::get<int64_t>(position));
       }
     }
 

@@ -310,7 +310,7 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
   instance->buffer = std::make_unique<FlutterPixelBuffer>();
   instance->buffer->width = instance->player->GetWidth();
   instance->buffer->height = instance->player->GetHeight();
-  instance->buffer->buffer = std::make_shared<uint8_t>(instance->player->GetFrameBuffer());
+  instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
   
 #endif  // USE_EGL_IMAGE_DMABUF
   // const auto texture_id =

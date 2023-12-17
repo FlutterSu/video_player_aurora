@@ -1,7 +1,7 @@
 %global __provides_exclude_from ^%{_datadir}/%{name}/lib/.*$
 %global __requires_exclude ^lib(dconf|flutter-embedder|maliit-glib|gstreamer-1.0|.+_platform_plugin)\\.so.*$
 
-Name: com.alexsherkan.example
+Name: com.alexsherkhan.example
 Summary: Demonstrates how to use the video_player plugin.
 Version: 0.1.0
 Release: 1

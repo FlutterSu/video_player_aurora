@@ -79,189 +79,63 @@ VideoPlayerAuroraPlugin::~VideoPlayerAuroraPlugin() {
 void VideoPlayerAuroraPlugin::RegisterWithRegistrar(
     PluginRegistrar& registrar) {
       
-    auto plugin = std::make_unique<VideoPlayerAuroraPlugin>();
-    plugin.get()->plugin_registrar_ = &(registrar);
-    plugin.get()->texture_registrar_ = registrar.GetTextureRegistrar();
-  {
-    auto channel = BasicMessageChannel(kVideoPlayerApiChannelInitializeName,
-    MessageCodecType::Standard);
+    plugin_registrar_ = &(registrar);
+    texture_registrar_ = registrar.GetTextureRegistrar();
 
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelInitializeName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelInitializeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleInitializeMethodCall(message);});
-    
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelInitializeName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleInitializeMethodCall(message, reply);
-    //     });
-  }
 
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelCreateName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelCreateName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleCreateMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelCreateName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleCreateMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelDisposeName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelDisposeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleDisposeMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelDisposeName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleDisposeMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPauseName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPauseName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePauseMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelPauseName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandlePauseMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPlayName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPlayName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePlayMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelPlayName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandlePlayMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetLoopingName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetLoopingName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetLoopingMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelSetLoopingName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleSetLoopingMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetVolumeName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetVolumeName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetVolumeMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelSetVolumeName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleSetVolumeMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetMixWithOthersName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetMixWithOthersName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetMixWithOthersMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelSetMixWithOthersName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleSetMixWithOthersMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetPlaybackSpeedName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSetPlaybackSpeedName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSetPlaybackSpeedMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelSetPlaybackSpeedName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleSetPlaybackSpeedMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSeekToName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelSeekToName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandleSeekToMethodCall(message);});
 
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelSeekToName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandleSeekToMethodCall(message, reply);
-    //     });
-  }
-
-  {
-    plugin.get()->plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPositionName,
+    plugin_registrar_->RegisterBasicMessageChannel(kVideoPlayerApiChannelPositionName,
     MessageCodecType::Standard,
     [this](const BasicMessage &message) { 
       this->HandlePositionMethodCall(message);});
-
-    // auto channel =
-    //     std::make_unique<flutter::BasicMessageChannel<flutter::EncodableValue>>(
-    //         registrar->messenger(), kVideoPlayerApiChannelPositionName,
-    //         &flutter::StandardMessageCodec::GetInstance());
-    // channel->SetMessageHandler(
-    //     [plugin_pointer = plugin.get()](const auto& message, auto reply) {
-    //       plugin_pointer->HandlePositionMethodCall(message, reply);
-    //     });
-  }
-
-  //registrar->AddPlugin(std::move(plugin));
 }
 
 void VideoPlayerAuroraPlugin::unimplemented(const MethodCall& call) {
@@ -293,6 +167,7 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
   }
 
   auto instance = std::make_unique<FlutterVideoPlayer>();
+  
 #ifdef USE_EGL_IMAGE_DMABUF
   instance->egl_image = std::make_unique<FlutterDesktopEGLImage>();
   instance->texture =
@@ -307,19 +182,35 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
             return instance->egl_image.get();
           }));
 #else
-  instance->buffer = std::make_unique<FlutterPixelBuffer>();
-  instance->buffer->width = instance->player->GetWidth();
-  instance->buffer->height = instance->player->GetHeight();
-  instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
-  
-#endif  // USE_EGL_IMAGE_DMABUF
-  // const auto texture_id =
-  //     texture_registrar_->RegisterTexture(instance->texture.get());
-
-  const auto texture_id =
-      texture_registrar_->RegisterTexture(
-        [this,instance = instance.get()](size_t, size_t) -> std::optional<BufferVariant> {
+  // instance->texture = std::make_unique<TextureBufferBuilder>(
+  //     [instance = instance.get()](size_t width, size_t height) -> std::optional<BufferVariant> {        
             
+  //           instance->buffer->width = instance->player->GetWidth();
+  //           instance->buffer->height = instance->player->GetHeight();
+  //           instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
+           
+  //           auto pixel_buffer = instance->buffer.get();
+
+  //           if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
+  //               return std::make_optional(BufferVariant(
+  //                   FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
+  //           }
+  //           return std::nullopt;
+  //     });
+  // instance->buffer = std::make_unique<FlutterPixelBuffer>();
+  // instance->buffer->width = instance->player->GetWidth();
+  // instance->buffer->height = instance->player->GetHeight();
+  // instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
+
+    const auto texture_id =
+      texture_registrar_->RegisterTexture(
+          [instance = instance.get()](size_t width, size_t height) -> std::optional<BufferVariant> {        
+            
+            instance->buffer = std::make_unique<FlutterPixelBuffer>();
+            instance->buffer->width = instance->player->GetWidth();
+            instance->buffer->height = instance->player->GetHeight();
+            instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
+           
             auto pixel_buffer = instance->buffer.get();
 
             if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
@@ -327,7 +218,22 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
                     FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
             }
             return std::nullopt;
-        });
+      });
+  
+#endif  // USE_EGL_IMAGE_DMABUF
+
+  // const auto texture_id =
+  //     texture_registrar_->RegisterTexture(
+  //       [this,instance = instance.get()](size_t, size_t) -> std::optional<BufferVariant> {
+            
+  //           auto pixel_buffer = instance->buffer.get();
+
+  //           if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
+  //               return std::make_optional(BufferVariant(
+  //                   FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
+  //           }
+  //           return std::nullopt;
+  //       });
 
   instance->texture_id = texture_id;
   {
@@ -369,7 +275,6 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
     //     });
     // event_channel->SetStreamHandler(std::move(event_channel_handler));
     instance->event_channel = std::move(event_channel);
-
     
   }
   {
@@ -624,6 +529,7 @@ void VideoPlayerAuroraPlugin::SendInitializedEventMessage(int64_t texture_id) {
       {"width", Encodable::Int(width)},
       {"height", Encodable::Int(height)}};
   Encodable event(encodables);
+  players_[texture_id]->event_channel->SendEvent(event);
   // players_[texture_id]->event_sink->Success(event);
 }
 
@@ -637,6 +543,7 @@ void VideoPlayerAuroraPlugin::SendPlayCompletedEventMessage(int64_t texture_id) 
   Encodable::Map encodables = {
       {"event", Encodable::String("completed")}};
   Encodable event(encodables);
+  players_[texture_id]->event_channel->SendEvent(event);
   // players_[texture_id]->event_sink->Success(event);
 }
 
@@ -652,6 +559,7 @@ void VideoPlayerAuroraPlugin::SendIsPlayingStateUpdate(int64_t texture_id,
       {"event", Encodable::String("isPlayingStateUpdate")},
       {"isPlaying", Encodable::Boolean(is_playing)}};
   Encodable event(encodables);
+  players_[texture_id]->event_channel->SendEvent(event);
   //players_[texture_id]->event_sink->Success(event);
 }
 

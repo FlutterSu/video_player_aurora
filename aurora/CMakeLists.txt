@@ -23,6 +23,7 @@ pkg_check_modules(GSTREAMER REQUIRED IMPORTED_TARGET gstreamer-1.0)
 pkg_check_modules(GST_APP REQUIRED IMPORTED_TARGET gstreamer-app-1.0)
 pkg_check_modules(GSTREAMER-AUDIO REQUIRED IMPORTED_TARGET gstreamer-audio-1.0)
 pkg_check_modules(FlutterEmbedder REQUIRED IMPORTED_TARGET flutter-embedder)
+pkg_check_modules(GLES REQUIRED IMPORTED_TARGET glesv2)
 
 # if(USE_EGL_IMAGE_DMABUF)
 # pkg_check_modules(GSTREAMER_GL REQUIRED gstreamer-gl-1.0)
@@ -47,7 +48,8 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-psabi")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
-target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::FlutterEmbedder)
+target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::FlutterEmbedder  PkgConfig::GLES)
+
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GSTREAMER)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GLIB)
 

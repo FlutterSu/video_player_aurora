@@ -2,11 +2,11 @@
 Type=Application
 Name=example
 Comment=Demonstrates how to use the video_player plugin.
-Icon=com.alexsherkan.example
-Exec=/usr/bin/com.alexsherkan.example
+Icon=com.alexsherkhan.example
+Exec=/usr/bin/com.alexsherkhan.example
 X-Nemo-Application-Type=silica-qt5
 
 [X-Application]
 Permissions=UserDirs;Audio;Internet;RemovableMedia;Videos
-OrganizationName=com.alexsherkan
+OrganizationName=com.alexsherkhan
 ApplicationName=example

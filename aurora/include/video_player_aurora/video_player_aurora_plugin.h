@@ -20,7 +20,7 @@ private:
  struct FlutterVideoPlayer {
     int64_t texture_id;
     std::unique_ptr<GstVideoPlayer> player;
-    // std::unique_ptr<BufferVariant> texture;
+    // std::unique_ptr<TextureBufferBuilder> texture;
     std::unique_ptr<FlutterPixelBuffer> buffer;
 #ifdef USE_EGL_IMAGE_DMABUF
     std::unique_ptr<FlutterDesktopEGLImage> egl_image;

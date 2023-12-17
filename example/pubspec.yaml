@@ -15,7 +15,20 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.10.0
+  path_provider: ^2.0.6
+  path_provider_aurora:
+    git:
+      url: https://gitlab.com/omprussia/flutter/flutter-plugins.git
+      ref: master
+      path: packages/path_provider/path_provider_aurora
   test: any
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/flutter-mark-square-64.png
+    - assets/Butterfly-209.mp4
+    - assets/Butterfly-209.webm
+    - assets/bumble_bee_captions.srt
+    - assets/bumble_bee_captions.vtt
+    - assets/Audio.mp3

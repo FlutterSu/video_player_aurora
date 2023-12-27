@@ -30,7 +30,7 @@ GstVideoPlayer::GstVideoPlayer(
 
   // Sets internal video size and buffier.
   GetVideoSize(width_, height_);
-  pixels_.reset(new uint32_t[width_ * height_]);
+  pixels_.reset(new uint8_t[width_ * height_ * 4]);
 
   stream_handler_->OnNotifyInitialized();
 }
@@ -217,7 +217,7 @@ void GstVideoPlayer::UnrefEGLImage() {
 }
 #endif  // USE_EGL_IMAGE_DMABUF
 
-const uint8_t* GstVideoPlayer::GetFrameBuffer() {
+std::shared_ptr<uint8_t> GstVideoPlayer::GetFrameBuffer() {
   std::shared_lock<std::shared_mutex> lock(mutex_buffer_);
   if (!gst_.buffer) {
     return nullptr;
@@ -225,7 +225,7 @@ const uint8_t* GstVideoPlayer::GetFrameBuffer() {
 
   const uint32_t pixel_bytes = width_ * height_ * 4;
   gst_buffer_extract(gst_.buffer, 0, pixels_.get(), pixel_bytes);
-  return reinterpret_cast<const uint8_t*>(pixels_.get());
+  return pixels_;
 }
 
 // Creats a video pipeline using playbin.
@@ -423,7 +423,7 @@ void GstVideoPlayer::HandoffHandler(GstElement* fakesink, GstBuffer* buf,
   if (width != self->width_ || height != self->height_) {
     self->width_ = width;
     self->height_ = height;
-    self->pixels_.reset(new uint32_t[width * height]);
+    self->pixels_.reset(new uint8_t[width * height * 4]);
     std::cout << "Pixel buffer size: width = " << width
               << ", height = " << height << std::endl;
   }

@@ -40,7 +40,7 @@ class GstVideoPlayer {
   bool SetSeek(int64_t position);
   int64_t GetDuration();
   int64_t GetCurrentPosition();
-  const uint8_t* GetFrameBuffer();
+  std::shared_ptr<uint8_t> GetFrameBuffer();
 #ifdef USE_EGL_IMAGE_DMABUF
   void* GetEGLImage(void* egl_display, void* egl_context);
 #endif  // USE_EGL_IMAGE_DMABUF
@@ -73,7 +73,7 @@ class GstVideoPlayer {
 
   GstVideoElements gst_;
   std::string uri_;
-  std::unique_ptr<uint32_t> pixels_;
+  std::shared_ptr<uint8_t> pixels_;
   int32_t width_;
   int32_t height_;
   double volume_ = 1.0;

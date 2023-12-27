@@ -208,15 +208,7 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
             instance->buffer = std::make_unique<FlutterPixelBuffer>();
             instance->buffer->width = instance->player->GetWidth();
             instance->buffer->height = instance->player->GetHeight();
-
-            const uint8_t* frame_buffer = instance->player->GetFrameBuffer();
-
-            if(frame_buffer){
-              size_t size = instance->buffer->width * instance->buffer->height * 4;
-              instance->buffer->buffer.reset(new uint8_t[size]);
-              //instance->buffer->buffer = std::shared_ptr<uint8_t>((uint8_t *) malloc(size), free);
-              memcpy(instance->buffer->buffer.get(), frame_buffer, size);
-            }
+            instance->buffer->buffer = instance->player->GetFrameBuffer();
             
             if (instance->buffer.get()->buffer && instance->buffer->width != 0 && instance->buffer->height != 0) {
                 return std::make_optional(BufferVariant(

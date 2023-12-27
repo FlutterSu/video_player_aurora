@@ -26,7 +26,7 @@ private:
     std::unique_ptr<FlutterDesktopEGLImage> egl_image;
 #endif  // USE_EGL_IMAGE_DMABUF
     std::unique_ptr<EventChannel>
-        event_channel;
+        event_channel;  
     // std::unique_ptr<flutter::EventSink<Encodable>> event_sink;
   };
 

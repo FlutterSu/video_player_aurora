@@ -9,11 +9,8 @@ The implementation of the Video Player plugin for Aurora OS. APIs are designed t
 This plugin uses [GStreamer](https://gstreamer.freedesktop.org/) internally.
 
 ```Shell
-$ sudo apt install libglib2.0-dev libgstreamer1.0-dev
 # Install as needed.
-$ sudo apt install libgstreamer-plugins-base1.0-dev \
-    gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
+$ aurora_psdk sb2 -t Aurora_OS-4.0.2.249-armv7hl.default -m sdk-install -R zypper in gstreamer1.0-plugins-base-devel
 ```
 
 ## Usage

@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <unordered_map>
+#include <filesystem>
 
 #include "gst_video_player.h"
 #include "messages/messages.h"
@@ -160,8 +161,8 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
   std::string uri;
   if (!meta.GetAsset().empty()) {
     // todo: gets propery path of the Flutter project.
-    std::string flutter_project_path = GetExecutableDirectory() + "/data/";
-    uri = flutter_project_path + "flutter_assets/" + meta.GetAsset();
+    std::string flutter_project_path = GetExecutableDirectory() + "/";
+    uri = "file://"+ flutter_project_path +"flutter_assets/"+ meta.GetAsset();
   } else {
     uri = meta.GetUri();
   }
@@ -571,10 +572,41 @@ Encodable VideoPlayerAuroraPlugin::WrapError(
 }
 
 const std::string VideoPlayerAuroraPlugin::GetExecutableDirectory() {
+  
+  char* value = getenv("XDG_DATA_DIRS");
+  std::string xdgDataDirsEnv;
+  if (value){
+    xdgDataDirsEnv = std::string(value);
+  } else {
+    xdgDataDirsEnv = "";
+  }
+
+  std::vector<std::string> dirs = {};
+  if (xdgDataDirsEnv.empty()) {
+    dirs.push_back(std::string("~/.local/share/"));
+    dirs.push_back(std::string("/usr/local/share"));
+    dirs.push_back(std::string("/usr/share"));
+  } else {
+    std::string delimiter = ":";
+    size_t pos = 0;
+    std::string token;
+
+    while ((pos = xdgDataDirsEnv.find(delimiter)) != std::string::npos) {
+      token = xdgDataDirsEnv.substr(0, pos);
+      dirs.push_back(token);
+      xdgDataDirsEnv.erase(0, pos + delimiter.length());
+    }
+  }
+  
   static char buf[1024] = {};
   readlink("/proc/self/exe", buf, sizeof(buf) - 1);
-
   std::string exe_path = std::string(buf);
-  const int slash_pos = exe_path.find_last_of('/');
-  return exe_path.substr(0, slash_pos);
+  size_t slash_pos = exe_path.find_last_of('/');
+  std::string exe_name = exe_path.substr(slash_pos, exe_path.length()-1);
+  
+  for (auto it = dirs.begin(); it != dirs.end(); ++it)
+    if (std::filesystem::is_directory( *(it) + exe_name + "/flutter_assets"))
+      return *(it) + exe_name;
+ 
+  return "";
 }

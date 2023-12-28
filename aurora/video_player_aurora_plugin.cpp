@@ -4,11 +4,9 @@
 // found in the LICENSE file.
 #include <video_player_aurora/video_player_aurora_plugin.h>
 
-
 #include <flutter/basic-message-channel.h>
 #include <flutter/encodable.h>
 #include <flutter/event-channel.h>
-// #include <flutter/event_stream_handler_functions.h>
 #include <flutter/method-channel.h>
 #include <flutter/plugin-registrar.h>
 #include <flutter/message-codec-type.h>
@@ -63,13 +61,8 @@ VideoPlayerAuroraPlugin::~VideoPlayerAuroraPlugin() {
     for (auto itr = players_.begin(); itr != players_.end(); itr++) {
       auto texture_id = itr->first;
       auto* player = itr->second.get();
-      // player->event_sink = nullptr;
-      // if (player->event_channel) {
-      //   player->event_channel->SetEventHandlers(nullptr);
-      // }
       player->player = nullptr;
       player->buffer = nullptr;
-      // player->texture = nullptr;
       texture_registrar_->UnregisterTexture(texture_id);
     }
     players_.clear();
@@ -152,7 +145,6 @@ void VideoPlayerAuroraPlugin::HandleInitializeMethodCall(
   result.emplace(Encodable::String(kEncodableMapkeyResult),
                  Encodable::Null());
   reply.SendResponse(Encodable::Map(result));
-  // reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
@@ -170,39 +162,19 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
   auto instance = std::make_unique<FlutterVideoPlayer>();
   
 #ifdef USE_EGL_IMAGE_DMABUF
-  instance->egl_image = std::make_unique<FlutterDesktopEGLImage>();
-  instance->texture =
-      std::make_unique<flutter::TextureVariant>(flutter::EGLImageTexture(
-          [instance = instance.get()](
-              size_t width, size_t height, void* egl_display,
-              void* egl_context) -> const FlutterDesktopEGLImage* {
-            instance->egl_image->width = instance->player->GetWidth();
-            instance->egl_image->height = instance->player->GetHeight();
-            instance->egl_image->egl_image =
-                instance->player->GetEGLImage(egl_display, egl_context);
-            return instance->egl_image.get();
-          }));
+  // instance->egl_image = std::make_unique<FlutterDesktopEGLImage>();
+  // instance->texture =
+  //     std::make_unique<flutter::TextureVariant>(flutter::EGLImageTexture(
+  //         [instance = instance.get()](
+  //             size_t width, size_t height, void* egl_display,
+  //             void* egl_context) -> const FlutterDesktopEGLImage* {
+  //           instance->egl_image->width = instance->player->GetWidth();
+  //           instance->egl_image->height = instance->player->GetHeight();
+  //           instance->egl_image->egl_image =
+  //               instance->player->GetEGLImage(egl_display, egl_context);
+  //           return instance->egl_image.get();
+  //         }));
 #else
-  // instance->texture = std::make_unique<TextureBufferBuilder>(
-  //     [instance = instance.get()](size_t width, size_t height) -> std::optional<BufferVariant> {        
-            
-  //           instance->buffer->width = instance->player->GetWidth();
-  //           instance->buffer->height = instance->player->GetHeight();
-  //           instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
-           
-  //           auto pixel_buffer = instance->buffer.get();
-
-  //           if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
-  //               return std::make_optional(BufferVariant(
-  //                   FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
-  //           }
-  //           return std::nullopt;
-  //     });
-  // instance->buffer = std::make_unique<FlutterPixelBuffer>();
-  // instance->buffer->width = instance->player->GetWidth();
-  // instance->buffer->height = instance->player->GetHeight();
-  // instance->buffer->buffer = std::shared_ptr<uint8_t>(const_cast<uint8_t*>(instance->player->GetFrameBuffer()));
-
     const auto texture_id =
       texture_registrar_->RegisterTexture(
           [instance = instance.get()](size_t width, size_t height) -> std::optional<BufferVariant> {        
@@ -220,19 +192,6 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
   
 #endif  // USE_EGL_IMAGE_DMABUF
 
-  // const auto texture_id =
-  //     texture_registrar_->RegisterTexture(
-  //       [this,instance = instance.get()](size_t, size_t) -> std::optional<BufferVariant> {
-            
-  //           auto pixel_buffer = instance->buffer.get();
-
-  //           if (pixel_buffer->buffer && pixel_buffer->width != 0 && pixel_buffer->height != 0) {
-  //               return std::make_optional(BufferVariant(
-  //                   FlutterPixelBuffer{pixel_buffer->buffer, (size_t) pixel_buffer->width, (size_t) pixel_buffer->height}));
-  //           }
-  //           return std::nullopt;
-  //       });
-
   instance->texture_id = texture_id;
   {
     auto event_channel =
@@ -243,37 +202,14 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
         kVideoPlayerVideoEventsChannelName + std::to_string(texture_id),
         MethodCodecType::Standard,
         [instance = instance.get(), host = this](const Encodable &){
-          // instance->event_sink = std::move(events);
           host->SendInitializedEventMessage(instance->texture_id);
           return EventResponse();
         },
         [instance = instance.get()](const Encodable &){
-          //instance->event_sink = nullptr;
           return EventResponse();
         }
-    );    
-    
-    // auto event_channel_handler = std::make_unique<
-    //     flutter::StreamHandlerFunctions<flutter::EncodableValue>>(
-    //     [instance = instance.get(), host = this](
-    //         const flutter::EncodableValue* arguments,
-    //         std::unique_ptr<flutter::EventSink<flutter::EncodableValue>>&&
-    //             events)
-    //         -> std::unique_ptr<
-    //             flutter::StreamHandlerError<flutter::EncodableValue>> {
-    //       instance->event_sink = std::move(events);
-    //       host->SendInitializedEventMessage(instance->texture_id);
-    //       return nullptr;
-    //     },
-    //     [instance = instance.get()](const flutter::EncodableValue* arguments)
-    //         -> std::unique_ptr<
-    //             flutter::StreamHandlerError<flutter::EncodableValue>> {
-    //       instance->event_sink = nullptr;
-    //       return nullptr;
-    //     });
-    // event_channel->SetStreamHandler(std::move(event_channel_handler));
-    instance->event_channel = std::move(event_channel);
-    
+    );      
+    instance->event_channel = std::move(event_channel);  
   }
   {
     auto player_handler = std::make_unique<VideoPlayerStreamHandlerImpl>(
@@ -305,7 +241,6 @@ void VideoPlayerAuroraPlugin::HandleCreateMethodCall(
 
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(value));            
-  //reply(Encodable::Map(value));
 }
 
 void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
@@ -316,11 +251,8 @@ void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
 
   if (players_.find(texture_id) != players_.end()) {
     auto* player = players_[texture_id].get();
-    // player->event_sink = nullptr;
-    // player->event_channel->SetStreamHandler(nullptr);
     player->player = nullptr;
     player->buffer = nullptr;
-    // player->texture = nullptr;
     players_.erase(texture_id);
     texture_registrar_->UnregisterTexture(texture_id);
 
@@ -334,7 +266,6 @@ void VideoPlayerAuroraPlugin::HandleDisposeMethodCall(
   }
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  // reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandlePauseMethodCall(
@@ -356,7 +287,6 @@ void VideoPlayerAuroraPlugin::HandlePauseMethodCall(
   
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandlePlayMethodCall(
@@ -378,7 +308,6 @@ void VideoPlayerAuroraPlugin::HandlePlayMethodCall(
   
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleSetLoopingMethodCall(
@@ -400,7 +329,6 @@ void VideoPlayerAuroraPlugin::HandleSetLoopingMethodCall(
   
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleSetVolumeMethodCall(
@@ -422,7 +350,6 @@ void VideoPlayerAuroraPlugin::HandleSetVolumeMethodCall(
   
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleSetMixWithOthersMethodCall(
@@ -435,7 +362,6 @@ void VideoPlayerAuroraPlugin::HandleSetMixWithOthersMethodCall(
   
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandlePositionMethodCall(
@@ -466,7 +392,6 @@ void VideoPlayerAuroraPlugin::HandlePositionMethodCall(
   }
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleSetPlaybackSpeedMethodCall(
@@ -487,7 +412,6 @@ void VideoPlayerAuroraPlugin::HandleSetPlaybackSpeedMethodCall(
   }
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::HandleSeekToMethodCall(
@@ -508,13 +432,10 @@ void VideoPlayerAuroraPlugin::HandleSeekToMethodCall(
   }
   BasicMessage reply = message;
   reply.SendResponse(Encodable::Map(result));  
-  //reply(Encodable::Map(result));
 }
 
 void VideoPlayerAuroraPlugin::SendInitializedEventMessage(int64_t texture_id) {
-  if (players_.find(texture_id) == players_.end() 
-  //|| !players_[texture_id]->event_sink
-  ) {
+  if (players_.find(texture_id) == players_.end()) {
     return;
   }
 
@@ -528,13 +449,10 @@ void VideoPlayerAuroraPlugin::SendInitializedEventMessage(int64_t texture_id) {
       {"height", Encodable::Int(height)}};
   Encodable event(encodables);
   players_[texture_id]->event_channel->SendEvent(event);
-  // players_[texture_id]->event_sink->Success(event);
 }
 
 void VideoPlayerAuroraPlugin::SendPlayCompletedEventMessage(int64_t texture_id) {
-  if (players_.find(texture_id) == players_.end() 
-  //||!players_[texture_id]->event_sink
-  ) {
+  if (players_.find(texture_id) == players_.end()) {
     return;
   }
 
@@ -542,14 +460,11 @@ void VideoPlayerAuroraPlugin::SendPlayCompletedEventMessage(int64_t texture_id) 
       {"event", Encodable::String("completed")}};
   Encodable event(encodables);
   players_[texture_id]->event_channel->SendEvent(event);
-  // players_[texture_id]->event_sink->Success(event);
 }
 
 void VideoPlayerAuroraPlugin::SendIsPlayingStateUpdate(int64_t texture_id,
                                                  bool is_playing) {
-  if (players_.find(texture_id) == players_.end() 
-  //|| !players_[texture_id]->event_sink
-      ) {
+  if (players_.find(texture_id) == players_.end()) {
     return;
   }
 
@@ -558,7 +473,6 @@ void VideoPlayerAuroraPlugin::SendIsPlayingStateUpdate(int64_t texture_id,
       {"isPlaying", Encodable::Boolean(is_playing)}};
   Encodable event(encodables);
   players_[texture_id]->event_channel->SendEvent(event);
-  //players_[texture_id]->event_sink->Success(event);
 }
 
 Encodable VideoPlayerAuroraPlugin::WrapError(

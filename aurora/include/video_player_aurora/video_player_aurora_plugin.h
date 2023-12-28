@@ -20,14 +20,12 @@ private:
  struct FlutterVideoPlayer {
     int64_t texture_id;
     std::unique_ptr<GstVideoPlayer> player;
-    // std::unique_ptr<TextureBufferBuilder> texture;
     std::unique_ptr<FlutterPixelBuffer> buffer;
 #ifdef USE_EGL_IMAGE_DMABUF
     std::unique_ptr<FlutterDesktopEGLImage> egl_image;
 #endif  // USE_EGL_IMAGE_DMABUF
     std::unique_ptr<EventChannel>
         event_channel;  
-    // std::unique_ptr<flutter::EventSink<Encodable>> event_sink;
   };
 
   void HandleInitializeMethodCall(

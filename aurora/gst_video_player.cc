@@ -140,8 +140,8 @@ int64_t GstVideoPlayer::GetDuration() {
   GstFormat fmt = GST_FORMAT_TIME;
   gint64 duration_msec;
   if (!gst_element_query_duration(gst_.pipeline, fmt, &duration_msec)) {
-    std::cerr << "Failed to get duration" << std::endl;
-    return -1;
+//    std::cerr << "Failed to get duration" << std::endl;
+    return 0;
   }
   duration_msec /= GST_MSECOND;
   return duration_msec;
@@ -152,8 +152,8 @@ int64_t GstVideoPlayer::GetCurrentPosition() {
 
   // Sometimes we get an error when playing streaming videos.
   if (!gst_element_query_position(gst_.pipeline, GST_FORMAT_TIME, &position)) {
-    std::cerr << "Failed to get current position" << std::endl;
-    return -1;
+//    std::cerr << "Failed to get current position" << std::endl;
+    return 0;
   }
 
   // TODO: We need to handle this code in the proper plase.
